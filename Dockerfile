@@ -45,7 +45,7 @@ ENV PATH="${PATH}:/opt/xtensa-esp32-elf/bin"
 #   IDF_CHECKOUT_REF=<some commit on release/vX.Y branch>.
 
 ARG IDF_CLONE_URL=https://github.com/espressif/esp-idf.git
-ARG IDF_CLONE_BRANCH_OR_TAG=v3.3-beta3
+ARG IDF_CLONE_BRANCH_OR_TAG=v3.3
 ARG IDF_CHECKOUT_REF=
 
 ENV IDF_PATH=/opt/esp/idf
