@@ -39,7 +39,7 @@ RUN python -m pip install --upgrade pip virtualenv==16.7.9
 #   IDF_CHECKOUT_REF=<some commit on release/vX.Y branch>.
 
 ARG IDF_CLONE_URL=https://github.com/espressif/esp-idf.git
-ARG IDF_CLONE_BRANCH_OR_TAG=v4.0
+ARG IDF_CLONE_BRANCH_OR_TAG=v4.1-beta1
 ARG IDF_CHECKOUT_REF=
 
 ENV IDF_PATH=/opt/esp/idf
