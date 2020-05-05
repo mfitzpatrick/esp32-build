@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y \
     ninja-build \
     python3 \
     python3-pip \
+    python3-setuptools \
     unzip \
     wget \
     xz-utils \
@@ -28,15 +29,8 @@ RUN apt-get update && apt-get install -y \
    && rm -rf /var/lib/apt/lists/* \
    && update-alternatives --install /usr/bin/python python /usr/bin/python3 10
 
-RUN python -m pip install --upgrade pip virtualenv
-
-RUN set -ex \
-    && wget -O /opt/xtensa.tar.gz https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz \
-    && cd /opt \
-    && tar -xzf xtensa.tar.gz \
-    && rm xtensa.tar.gz
-
-ENV PATH="${PATH}:/opt/xtensa-esp32-elf/bin"
+# Virtualenv <20.x is required for ESP-IDFv4.0. Should be fixed in next release
+RUN python -m pip install --upgrade pip virtualenv==16.7.9
 
 # To build the image for a branch or a tag of IDF, pass --build-arg IDF_CLONE_BRANCH_OR_TAG=name.
 # To build the image with a specific commit ID of IDF, pass --build-arg IDF_CHECKOUT_REF=commit-id.
@@ -60,7 +54,12 @@ RUN echo IDF_CHECKOUT_REF=$IDF_CHECKOUT_REF IDF_CLONE_BRANCH_OR_TAG=$IDF_CLONE_B
       git submodule update --init --recursive; \
     fi
 
-RUN python -m pip install --user -r ${IDF_PATH}/requirements.txt
+RUN cd ${IDF_PATH} && ./install.sh
 
-CMD [ "/bin/bash" ]
+# Create an entrypoint that sources the export.sh script first, then runs the CMD parameters
+RUN echo '#!/bin/bash\n. ${IDF_PATH}/export.sh\nexec "$@"' >/entrypoint.sh \
+    && chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD ["/bin/bash"]
 
