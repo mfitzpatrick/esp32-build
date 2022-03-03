@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 
 ARG DEBIAN_FRONTEND=noninteractive
 
@@ -16,6 +16,8 @@ RUN apt-get update && apt-get install -y \
     lcov \
     libncurses-dev \
     libusb-1.0-0-dev \
+    libffi-dev \
+    libssl-dev \
     make \
     ninja-build \
     python3 \
@@ -25,12 +27,16 @@ RUN apt-get update && apt-get install -y \
     wget \
     xz-utils \
     zip \
-   && apt-get autoremove -y \
-   && rm -rf /var/lib/apt/lists/* \
-   && update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+    && apt-get autoremove -y \
+    && rm -rf /var/lib/apt/lists/* \
+    && update-alternatives --install /usr/bin/python python /usr/bin/python3 10 \
+    && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o /opt/rustup.sh
 
-# Virtualenv <20.x is required for ESP-IDFv4.0. Should be fixed in next release
-RUN python -m pip install --upgrade pip virtualenv==16.7.9
+# Virtualenv <20.x is required for ESP-IDFv4.0. Should be fixed in next release.
+# Rustc is required by python's cryptography package.
+RUN python -m pip install --upgrade pip virtualenv==16.7.9 \
+    && sh /opt/rustup.sh -y
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # To build the image for a branch or a tag of IDF, pass --build-arg IDF_CLONE_BRANCH_OR_TAG=name.
 # To build the image with a specific commit ID of IDF, pass --build-arg IDF_CHECKOUT_REF=commit-id.
