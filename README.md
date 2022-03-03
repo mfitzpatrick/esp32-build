@@ -14,3 +14,9 @@ and build them.
 cd $IDF_PATH/examples
 ```
 
+## Using the prebuilt image
+```
+docker pull ghcr.io/mfitzpatrick/esp32-build:<tag name>
+docker run --rm ghcr.io/mfitzpatrick/esp32-build:<tag name>
+```
+
